@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>For You ❤️</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+  color: white;
+  text-align: center;
+}
+
+/* 🌙 Background */
+.bg {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: url("bg.jpg") center/cover no-repeat;
+  filter: blur(10px) brightness(0.4);
+  z-index: -1;
+}
+
+/* Screens */
+.screen {
+  position: absolute;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.hidden { display: none; }
+
+/* Text */
+p, h1, h2 {
+  text-shadow: 0 0 10px rgba(0,0,0,0.9);
+}
+
+/* 💌 Envelope */
+.envelope {
+  position: relative;
+  width: 220px;
+  height: 140px;
+  background: #ff4d6d;
+  border-radius: 10px;
+  cursor: pointer;
+  overflow: hidden;
+}
+.flap {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #e63950;
+  clip-path: polygon(0 0, 100% 0, 50% 50%);
+  transform-origin: top;
+  transition: 1s;
+  z-index: 2;
+}
+.letter {
+  position: absolute;
+  width: 90%;
+  height: 90%;
+  background: white;
+  top: 5%;
+  left: 5%;
+  border-radius: 5px;
+  transition: 1s;
+}
+.envelope.open .flap {
+  transform: rotateX(180deg);
+}
+.envelope.open .letter {
+  transform: translateY(-50px);
+}
+
+/* Inputs */
+input, button {
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  margin-top: 10px;
+}
+button {
+  background: #ff4d6d;
+  color: white;
+  cursor: pointer;
+}
+
+/* Image */
+img {
+  width: 260px;
+  height: 260px;
+  border-radius: 15px;
+  object-fit: cover;
+  box-shadow: 0 0 25px rgba(0,0,0,0.5);
+  transition: opacity 1s;
+}
+
+/* ❤️ Hearts */
+.heart {
+  position: absolute;
+  animation: rise 5s linear infinite;
+}
+@keyframes rise {
+  from { transform: translateY(100vh); opacity: 1; }
+  to { transform: translateY(-10vh); opacity: 0; }
+}
+
+/* 💓 Heartbeat */
+h1 {
+  animation: beat 1.5s infinite;
+}
+@keyframes beat {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* 🎆 Popup */
+#popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.9);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="bg"></div>
+
+<!-- 💌 Envelope -->
+<div class="screen" id="envelopeScreen">
+  <div class="envelope" onclick="openEnvelope(this)">
+    <div class="flap"></div>
+    <div class="letter"></div>
+  </div>
+  <p>Tap to open 💌</p>
+</div>
+
+<!-- 🔐 Password -->
+<div class="screen hidden" id="passwordScreen">
+  <h2>Enter Secret Password 🔐</h2>
+  <input type="password" id="pass">
+  <button onclick="checkPass()">Unlock ❤️</button>
+</div>
+
+<!-- ❤️ Main -->
+<div class="screen hidden" id="main">
+  <h1>Happy Birthday SHALLUUU ❤️</h1>
+  <img id="slide" src="photo1.jpg">
+  <p id="text"></p>
+</div>
+
+<!-- 🎆 Popup -->
+<div id="popup">I LOVE YOU SO MUCH 💖</div>
+
+<!-- 🎵 Music -->
+<audio id="music" loop>
+  <source src="music.mp3" type="audio/mp3">
+</audio>
+
+<script>
+function openEnvelope(el) {
+  el.classList.add("open");
+  setTimeout(()=>{
+    document.getElementById("envelopeScreen").classList.add("hidden");
+    document.getElementById("passwordScreen").classList.remove("hidden");
+  },1000);
+}
+
+function checkPass() {
+  if (document.getElementById("pass").value === "1026") {
+    document.getElementById("passwordScreen").classList.add("hidden");
+    document.getElementById("main").classList.remove("hidden");
+    document.getElementById("music").play().catch(()=>{});
+    typeText();
+    startSlideshow();
+  } else {
+    alert("Wrong password 😜");
+  }
+}
+
+/* 📸 20 Photos */
+const images = [
+  "photo1.jpg","photo2.jpg","photo3.jpg","photo4.jpg","photo5.jpg",
+  "photo6.jpg","photo7.jpg","photo8.jpg","photo9.jpg","photo10.jpg",
+  "photo11.jpg","photo12.jpg","photo13.jpg","photo14.jpg","photo15.jpg",
+  "photo16.jpg","photo17.jpg","photo18.jpg","photo19.jpg","photo20.jpg"
+];
+
+let i = 0;
+
+/* Slideshow with END popup */
+function startSlideshow(){
+  let count = 0;
+  const totalRounds = 2;
+  const totalSlides = images.length * totalRounds;
+
+  const interval = setInterval(()=>{
+    const img = document.getElementById("slide");
+    img.style.opacity = 0;
+
+    setTimeout(()=>{
+      i = (i+1)%images.length;
+      img.src = images[i];
+      img.style.opacity = 1;
+    },500);
+
+    count++;
+
+    // After 2 full rounds
+    if(count >= totalSlides){
+      clearInterval(interval);
+
+      setTimeout(()=>{
+        document.getElementById("popup").style.display = "flex";
+      },3000);
+    }
+
+  },4000);
+}
+
+/* 💌 Message (MULTILINE SAFE) */
+const msg = `Shalluuu aap Mere lie kya ho I can't Express I can't. 
+From the day you came into my life, everything became more beautiful 💖 
+You are my happiness, my peace, my everything.
+
+Agr Tum Sukha girta patta me baahe kholke betha bageecha hu,
+Tum dariya me behti kashti si,
+Me piche dodta rehta pani hu,
+Tum samjhdar ek panchi ka aasma ho,
+Me nasmjh Tumhara deewana parvaana hu 💕😁
+
+Aaaallluuuuuuhhhhhh Mera Bettuuu Shalluuu 😚🫂💗`;
+
+let j = 0;
+function typeText() {
+  if (j <= msg.length) {
+    document.getElementById("text").innerHTML =
+      msg.substring(0, j).replace(/\n/g,"<br>");
+    j++;
+    setTimeout(typeText, 70);
+  }
+}
+
+/* ❤️ Hearts */
+function heart() {
+  let h=document.createElement("div");
+  h.className="heart";
+  h.innerHTML="❤️";
+  h.style.left=Math.random()*100+"vw";
+  h.style.fontSize=(10+Math.random()*20)+"px";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),5000);
+}
+setInterval(heart,300);
+</script>
+
+</body>
+</html>
